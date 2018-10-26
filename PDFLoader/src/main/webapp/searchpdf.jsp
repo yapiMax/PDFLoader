@@ -1,4 +1,4 @@
-<%-- 
+<%--
     Document   : searchpdf
     Created on : Oct 12, 2018, 7:35:43 PM
     Author     : yapilk
@@ -19,7 +19,7 @@
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open Sans">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        
+
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
         <script src="https://apis.google.com/js/platform.js" async defer></script>
@@ -40,7 +40,7 @@
             }
 
             tr:hover {background-color:#f5f5f5;}
-            
+
             .signout{
                 background-color: #f44336;
                 border: none;
@@ -65,7 +65,7 @@
                                 <c:forEach items="${pdfFiles}" var="file" varStatus="stat">
                                     <li class="w3-padding-16">
                                         <c:out value="${file.name}"/>
-                                        <input type="text" name="fileId" id="fileId${stat.index}" value="${file.id}"/>
+                                        <input type="hidden" name="fileId" id="fileId${stat.index}" value="${file.id}"/>
                                         <button id="btnView" style="float: right" onclick="viewFile(${stat.index})">View</button>
                                     </li>
 
@@ -77,12 +77,12 @@
             </div>
 
         <script>
-            
+
             function signout()
             {
                 document.location.href = "https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=http://localhost:8082/PDFLoader/index.jsp";
             }
-            
+
             function viewFile(index)
             {
                 var fileId = document.getElementById("fileId"+index).value;
