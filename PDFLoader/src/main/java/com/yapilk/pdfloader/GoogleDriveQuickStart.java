@@ -40,67 +40,64 @@ import java.util.logging.Logger;
  */
 public class GoogleDriveQuickStart {
     private static final String APPLICATION_NAME = "PDF Loader";
-    
+
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    
+
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
-    
+
     //Global instance of the scopes
    private static final List<String> SCOPES = Collections.singletonList(DriveScopes.DRIVE);
-    
-   //Directory to store credentials for this application   
+
+   //Directory to store credentials for this application
    private static final String CLIENT_SECRET_PATH = "/client_secret.json";
-   
+
    public static Drive driveService;
-   
-   
-   
+
+
+
    private static Credential getCredentials(final NetHttpTransport HTTP_Transport) throws FileNotFoundException, IOException, GeneralSecurityException
    {
-       
+
        InputStream input = GoogleDriveQuickStart.class.getResourceAsStream(CLIENT_SECRET_PATH);
-       System.out.println("input : " + input);
        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(input));
-       System.out.println("clientSecrets : " + clientSecrets);
-       
+
        GoogleAuthorizationCodeFlow googleAuthorizationCodeFlow = new GoogleAuthorizationCodeFlow.Builder(HTTP_Transport, JSON_FACTORY, clientSecrets, SCOPES)
                .setDataStoreFactory(new MemoryDataStoreFactory())
                .setApprovalPrompt("force")
                .setAccessType("offline")
                .build();
-       
+
        LocalServerReceiver localServerReceiver = new LocalServerReceiver.Builder().setPort(8888).build();
-       
+
        return new AuthorizationCodeInstalledApp(googleAuthorizationCodeFlow, localServerReceiver).authorize("user");
 
    }
-   
-   public void driveQuickStart() throws GeneralSecurityException, IOException 
+
+   public void driveQuickStart() throws GeneralSecurityException, IOException
    {
        System.out.println("Client_secret : " + CLIENT_SECRET_PATH);
-       
+
        //Build a new authorized API client service
        final NetHttpTransport HttpTransport = GoogleNetHttpTransport.newTrustedTransport();
-       
+
        //Create Google Drive Service
        driveService = new Drive.Builder(HttpTransport, JSON_FACTORY, getCredentials(HttpTransport))
                .setApplicationName(APPLICATION_NAME)
                .build();
   }
-   
+
    public List<File> getGoogleFilesByName(String extension) throws IOException, GeneralSecurityException {
- 
-        //Drive driveService = GoogleDriveUtils.getDriveService();
- 
+
+
         String pageToken = null;
         List<File> list = new ArrayList<File>();
- 
-        String query = " fileExtension contains '" + extension + "' " //
+
+        String query = " fileExtension contains '" + extension + "' "
                 + " and mimeType != 'application/vnd.google-apps.folder' ";
- 
+
         do {
-            FileList result = driveService.files().list().setQ(query).setSpaces("drive") //
-                    .setFields("nextPageToken, files(id, name, createdTime, mimeType)")//
+            FileList result = driveService.files().list().setQ(query).setSpaces("drive")
+                    .setFields("nextPageToken, files(id, name, createdTime, mimeType)")
                     .setPageToken(pageToken).execute();
             for (File file : result.getFiles()) {
                 list.add(file);
@@ -110,7 +107,7 @@ public class GoogleDriveQuickStart {
 
         return list;
     }
-   
+
    public void downloadPDF(String fileId) throws IOException
    {
        OutputStream outputStream = new ByteArrayOutputStream();
